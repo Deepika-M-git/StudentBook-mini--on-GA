@@ -1,22 +1,29 @@
 name: First workflow
+
 on:
- push:
-   branches:
-     - 'feature/devOps-develop'
+  push:
+    branches:
+      - 'feature/devOps-develop'
+
 jobs:
   deploy:
-    runs-on: self-hosted 
+    runs-on: self-hosted
 
     steps:
-       - name: Deploy to local machine
-         uses: appleboy/ssh-action@v1.0.3
-         with:
-          host : ${{ secrets.HOST }}
-          username : ${{ secrets.USER }}
-          key : ${{ secrets.SSH_KEY }}
-          script : |
-            cd /var/www/html/
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy locally
+        run: |
+          cd /var/www/html/
+
+          # If repo already exists → pull latest changes
+          if [ -d "StudentBook-mini--on-GA" ]; then
+            cd StudentBook-mini--on-GA
+            git pull origin feature/devOps-develop
+          else
             git clone https://github.com/Deepika-M-git/StudentBook-mini--on-GA.git
-            pwd
-            ls -la
-            
+          fi
+
+          pwd
+          ls -la
